@@ -1,0 +1,10 @@
+{
+  "S1_single_image": {
+    "e2e_s": 5.997,
+    "error": "no valid GPU samples"
+  },
+  "S4_text_only": {
+    "e2e_s": 8.779,
+    "error": "no valid GPU samples"
+  }
+}

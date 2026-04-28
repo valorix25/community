@@ -1,0 +1,130 @@
+{
+  "S1_single_image": {
+    "e2e_latency_s": 5.929,
+    "ttft_s": 0.245,
+    "tokens": 256,
+    "throughput_tok_s": 43.18,
+    "latencies_s": [
+      6.164,
+      5.864,
+      5.759
+    ]
+  },
+  "S2_multi_turn": {
+    "turn_metrics": [
+      {
+        "e2e_s": 5.671,
+        "ttft_s": 0.244,
+        "tokens": 256,
+        "throughput_tok_s": 45.15
+      },
+      {
+        "e2e_s": 5.691,
+        "ttft_s": 0.247,
+        "tokens": 256,
+        "throughput_tok_s": 44.98
+      },
+      {
+        "e2e_s": 5.939,
+        "ttft_s": 0.247,
+        "tokens": 256,
+        "throughput_tok_s": 43.1
+      },
+      {
+        "e2e_s": 5.658,
+        "ttft_s": 0.252,
+        "tokens": 256,
+        "throughput_tok_s": 45.24
+      }
+    ],
+    "avg_e2e_s": 5.74
+  },
+  "S3_test_doc.png": {
+    "e2e_latency_s": 5.833,
+    "ttft_s": 0.244,
+    "tokens": 256,
+    "throughput_tok_s": 43.89,
+    "latencies_s": [
+      5.67,
+      5.713,
+      6.115
+    ]
+  },
+  "S3_test_receipt.png": {
+    "e2e_latency_s": 6.641,
+    "ttft_s": 0.26,
+    "tokens": 202,
+    "throughput_tok_s": 30.42,
+    "latencies_s": [
+      8.092,
+      4.562,
+      7.268
+    ]
+  },
+  "S3_test_table.png": {
+    "e2e_latency_s": 4.566,
+    "ttft_s": 0.259,
+    "tokens": 199,
+    "throughput_tok_s": 43.58,
+    "latencies_s": [
+      4.5,
+      4.472,
+      4.727
+    ]
+  },
+  "S4_text_only": {
+    "e2e_latency_s": 5.388,
+    "ttft_s": 0.026,
+    "tokens": 256,
+    "throughput_tok_s": 47.51,
+    "latencies_s": [
+      5.323,
+      5.472,
+      5.369
+    ]
+  },
+  "S8_max_tokens_64": {
+    "e2e_latency_s": 1.795,
+    "ttft_s": 0.237,
+    "tokens": 64,
+    "throughput_tok_s": 35.66,
+    "latencies_s": [
+      1.867,
+      1.709,
+      1.808
+    ]
+  },
+  "S8_max_tokens_128": {
+    "e2e_latency_s": 4.212,
+    "ttft_s": 0.241,
+    "tokens": 128,
+    "throughput_tok_s": 30.39,
+    "latencies_s": [
+      3.401,
+      3.451,
+      5.786
+    ]
+  },
+  "S8_max_tokens_256": {
+    "e2e_latency_s": 6.087,
+    "ttft_s": 0.242,
+    "tokens": 256,
+    "throughput_tok_s": 42.05,
+    "latencies_s": [
+      5.643,
+      5.999,
+      6.621
+    ]
+  },
+  "S8_max_tokens_512": {
+    "e2e_latency_s": 11.863,
+    "ttft_s": 0.242,
+    "tokens": 337,
+    "throughput_tok_s": 28.41,
+    "latencies_s": [
+      15.191,
+      10.891,
+      9.507
+    ]
+  }
+}

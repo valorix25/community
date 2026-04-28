@@ -1,0 +1,14 @@
+{
+  "S1_single_image": {
+    "e2e_latency_s": 7.764,
+    "ttft_s": 0.246,
+    "tokens": 256,
+    "throughput_tok_s": 32.97
+  },
+  "S4_text_only": {
+    "e2e_latency_s": 8.077,
+    "ttft_s": 0.032,
+    "tokens": 256,
+    "throughput_tok_s": 31.69
+  }
+}

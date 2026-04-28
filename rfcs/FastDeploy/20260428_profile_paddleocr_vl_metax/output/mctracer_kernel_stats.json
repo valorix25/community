@@ -1,0 +1,406 @@
+{
+  "total_gpu_time_s": 21180.403,
+  "total_kernel_events": 3610293,
+  "top_kernels": [
+    {
+      "name": "mcModuleLoad",
+      "calls": 11,
+      "total_ms": 5463132.29,
+      "avg_us": 496648390.0,
+      "max_us": 1161834855,
+      "pct_gpu": 25.79
+    },
+    {
+      "name": "mcLaunchKernel",
+      "calls": 395865,
+      "total_ms": 4570092.89,
+      "avg_us": 11544.6,
+      "max_us": 420009353,
+      "pct_gpu": 21.58
+    },
+    {
+      "name": "void flash_fwd_splitkv_kernel<Flash_fwd_kernel_traits<128, 16, 16, 1, true, true, mctlass::bfloat16_t, 128, Flash_kernel_traits<128, 16, 16, 1, mctlass::bfloat16_t> >, false, false, false, false, true, false, false, true, true, (Arch)1000>(mcFlashAttn::Flash_fwd_params, int, int)",
+      "calls": 27557,
+      "total_ms": 2422063.62,
+      "avg_us": 87892.9,
+      "max_us": 163072,
+      "pct_gpu": 11.44
+    },
+    {
+      "name": "mcMemcpyAsync",
+      "calls": 27442,
+      "total_ms": 1951421.6,
+      "avg_us": 71110.8,
+      "max_us": 82007353,
+      "pct_gpu": 9.21
+    },
+    {
+      "name": "void b16gemvn_splitk_kernel<256, 4, 4, int, float, __maca_bfloat16, float>(int, int, float, long long, __maca_bfloat16 const*, long long, int, long long, __maca_bfloat16 const*, long long, long long, float*, int)",
+      "calls": 55076,
+      "total_ms": 974798.08,
+      "avg_us": 17699.1,
+      "max_us": 21760,
+      "pct_gpu": 4.6
+    },
+    {
+      "name": "void b16gemvn_kernel<64, 4, 4, int, float, __maca_bfloat16, __maca_bfloat16>(int, int, float, long long, __maca_bfloat16 const*, long long, int, long long, __maca_bfloat16 const*, long long, long long, float, long long, __maca_bfloat16*, long long, long long)",
+      "calls": 27538,
+      "total_ms": 496611.58,
+      "avg_us": 18033.7,
+      "max_us": 23808,
+      "pct_gpu": 2.34
+    },
+    {
+      "name": "void phi::(anonymous namespace)::RmsNormBlockSMemImpl<phi::(anonymous namespace)::ResidualAddBiasLoad<phi::dtype::bfloat16, float>, phi::(anonymous namespace)::AffineStore<float, phi::dtype::bfloat16>, float, 4, 1024>(phi::(anonymous namespace)::ResidualAddBiasLoad<phi::dtype::bfloat16, float>, phi::(anonymous namespace)::AffineStore<float, phi::dtype::bfloat16>, long, long, float, float, float*)",
+      "calls": 55220,
+      "total_ms": 462008.32,
+      "avg_us": 8366.7,
+      "max_us": 9472,
+      "pct_gpu": 2.18
+    },
+    {
+      "name": "void b16gemvn_kernel<64, 4, 8, int, float, __maca_bfloat16, __maca_bfloat16>(int, int, float, long long, __maca_bfloat16 const*, long long, int, long long, __maca_bfloat16 const*, long long, long long, float, long long, __maca_bfloat16*, long long, long long)",
+      "calls": 27539,
+      "total_ms": 379442.94,
+      "avg_us": 13778.4,
+      "max_us": 19456,
+      "pct_gpu": 1.79
+    },
+    {
+      "name": "mcStreamSynchronize",
+      "calls": 19000,
+      "total_ms": 338948.86,
+      "avg_us": 17839.4,
+      "max_us": 55421152,
+      "pct_gpu": 1.6
+    },
+    {
+      "name": "memcpy HTOD(pinned,device)",
+      "calls": 4071,
+      "total_ms": 331105.02,
+      "avg_us": 81332.6,
+      "max_us": 81052416,
+      "pct_gpu": 1.56
+    },
+    {
+      "name": "mcSetDevice",
+      "calls": 1092415,
+      "total_ms": 285281.84,
+      "avg_us": 261.1,
+      "max_us": 34634,
+      "pct_gpu": 1.35
+    },
+    {
+      "name": "void update_value_by_repeat_times<float>(int const*, int const*, float const*, float const*, float const*, float const*, float*, long, long)",
+      "calls": 1537,
+      "total_ms": 260980.22,
+      "avg_us": 169798.5,
+      "max_us": 176384,
+      "pct_gpu": 1.23
+    },
+    {
+      "name": "void b16gemv_splitk_combine_kernel<__maca_bfloat16, float, float>(__maca_bfloat16*, float const*, int, int, float, int, long long, long long)",
+      "calls": 55076,
+      "total_ms": 252458.75,
+      "avg_us": 4583.8,
+      "max_us": 5888,
+      "pct_gpu": 1.19
+    },
+    {
+      "name": "void b16gemvn_row_double_buffer_kernel<256, 4, 8, int, float, __maca_bfloat16, __maca_bfloat16>(int, int, float, long long, __maca_bfloat16 const*, long long, int, long long, __maca_bfloat16 const*, long long, long long, float, long long, __maca_bfloat16*, long long, long long)",
+      "calls": 1535,
+      "total_ms": 215859.46,
+      "avg_us": 140625.1,
+      "max_us": 153344,
+      "pct_gpu": 1.02
+    },
+    {
+      "name": "void sampling::TopPSamplingFromProbKernel<1024u, (cub::BlockScanAlgorithm)2, (cub::BlockReduceAlgorithm)2, 4u, true, float, long>(float*, long*, float*, unsigned int, unsigned long, unsigned long)",
+      "calls": 1537,
+      "total_ms": 207302.66,
+      "avg_us": 134874.9,
+      "max_us": 189952,
+      "pct_gpu": 0.98
+    },
+    {
+      "name": "void DispatchCacheKVWithRopeVecKernel<__maca_bfloat16, float, 4, false, true>(__maca_bfloat16 const*, float const*, int const*, int const*, int const*, int const*, __maca_bfloat16*, __maca_bfloat16*, int const*, CacheKVWithRopeParams, __maca_bfloat16*, __maca_bfloat16*, __maca_bfloat16*)",
+      "calls": 27557,
+      "total_ms": 196472.32,
+      "avg_us": 7129.7,
+      "max_us": 8192,
+      "pct_gpu": 0.93
+    },
+    {
+      "name": "void phi::fusion::ActFFNGlu<phi::dtype::bfloat16, phi::fusion::CudaSwishFunctor<phi::dtype::bfloat16>, 8, phi::funcs::Load<phi::dtype::bfloat16>, phi::funcs::Store<phi::dtype::bfloat16, false> >(phi::dtype::bfloat16 const*, phi::fusion::CudaSwishFunctor<phi::dtype::bfloat16>, long, long, long, phi::funcs::Load<phi::dtype::bfloat16>, phi::funcs::Store<phi::dtype::bfloat16, false>)",
+      "calls": 27682,
+      "total_ms": 171141.12,
+      "avg_us": 6182.4,
+      "max_us": 53504,
+      "pct_gpu": 0.81
+    },
+    {
+      "name": "memcpy DTOD(device,device)",
+      "calls": 22190,
+      "total_ms": 158933.5,
+      "avg_us": 7162.4,
+      "max_us": 324864,
+      "pct_gpu": 0.75
+    },
+    {
+      "name": "mcGetDevice",
+      "calls": 754115,
+      "total_ms": 140269.28,
+      "avg_us": 186.0,
+      "max_us": 25300,
+      "pct_gpu": 0.66
+    },
+    {
+      "name": "void mcdnn::KernelSoftmaxForwardInstanceLdgB128<(mcdnnSoftmaxAlgorithm_t)1, 512u, 4u, false, true, float, float>(mcdnn::SoftmaxTensorDesc<true, (mcdnn::SoftmaxDirection)0> const*, float const*, float*, float, float, unsigned int)",
+      "calls": 1535,
+      "total_ms": 116749.57,
+      "avg_us": 76058.4,
+      "max_us": 79104,
+      "pct_gpu": 0.55
+    },
+    {
+      "name": "mcMemcpy",
+      "calls": 11204,
+      "total_ms": 114702.45,
+      "avg_us": 10237.6,
+      "max_us": 84124,
+      "pct_gpu": 0.54
+    },
+    {
+      "name": "mcMallocAsync",
+      "calls": 1537,
+      "total_ms": 114417.12,
+      "avg_us": 74441.8,
+      "max_us": 1914661,
+      "pct_gpu": 0.54
+    },
+    {
+      "name": "mcOccupancyMaxActiveBlocksPerMultiprocessor",
+      "calls": 174092,
+      "total_ms": 113280.57,
+      "avg_us": 650.7,
+      "max_us": 26262,
+      "pct_gpu": 0.53
+    },
+    {
+      "name": "mcGetDeviceProperties",
+      "calls": 292296,
+      "total_ms": 105928.68,
+      "avg_us": 362.4,
+      "max_us": 20617,
+      "pct_gpu": 0.5
+    },
+    {
+      "name": "memcpy DTOH(device,pageable)",
+      "calls": 12385,
+      "total_ms": 95849.98,
+      "avg_us": 7739.2,
+      "max_us": 61440,
+      "pct_gpu": 0.45
+    },
+    {
+      "name": "mcModuleLaunchKernel",
+      "calls": 911,
+      "total_ms": 92797.26,
+      "avg_us": 101863.1,
+      "max_us": 71292442,
+      "pct_gpu": 0.44
+    },
+    {
+      "name": "void phi::funcs::VectorizedElementwiseKernel<phi::dtype::bfloat16, phi::FullFunctor<phi::dtype::bfloat16, phi::dtype::bfloat16>, 0, 1, 4>(common::Array<char const* restrict, 0>, common::Array<phi::dtype::bfloat16*, 1>, long, long, int, phi::FullFunctor<phi::dtype::bfloat16, phi::dtype::bfloat16>)",
+      "calls": 1744,
+      "total_ms": 79428.35,
+      "avg_us": 45543.8,
+      "max_us": 2023424,
+      "pct_gpu": 0.38
+    },
+    {
+      "name": "void flash_fwd_kernel<Flash_fwd_kernel_traits<96, 128, 64, 4, true, true, mctlass::bfloat16_t, 96, Flash_kernel_traits<96, 128, 64, 4, mctlass::bfloat16_t> >, false, false, false, false, false, false, false, false, false, 1, false, (Arch)1000>(mcFlashAttn::Flash_fwd_params, int, int)",
+      "calls": 81,
+      "total_ms": 74324.22,
+      "avg_us": 917583.0,
+      "max_us": 922112,
+      "pct_gpu": 0.35
+    },
+    {
+      "name": "mcDeviceGetAttribute",
+      "calls": 113251,
+      "total_ms": 66804.96,
+      "avg_us": 589.9,
+      "max_us": 11335,
+      "pct_gpu": 0.32
+    },
+    {
+      "name": "mcblas__Mck_bf16gemm_nn_128x128x128_8m1n8k_256t_4stage_bf16_bf16_fp32_sb_0_0",
+      "calls": 390,
+      "total_ms": 50895.36,
+      "avg_us": 130500.9,
+      "max_us": 239872,
+      "pct_gpu": 0.24
+    },
+    {
+      "name": "void phi::funcs::VectorizedElementwiseKernel<int, phi::FullFunctor<int, int>, 0, 1, 4>(common::Array<char const* restrict, 0>, common::Array<int*, 1>, long, long, int, phi::FullFunctor<int, int>)",
+      "calls": 10817,
+      "total_ms": 48732.67,
+      "avg_us": 4505.2,
+      "max_us": 9472,
+      "pct_gpu": 0.23
+    },
+    {
+      "name": "mcMalloc",
+      "calls": 269,
+      "total_ms": 46307.8,
+      "avg_us": 172148.0,
+      "max_us": 23973513,
+      "pct_gpu": 0.22
+    },
+    {
+      "name": "mcMemCreate",
+      "calls": 1537,
+      "total_ms": 38264.28,
+      "avg_us": 24895.4,
+      "max_us": 61994,
+      "pct_gpu": 0.18
+    },
+    {
+      "name": "mcGetDeviceCount",
+      "calls": 236974,
+      "total_ms": 37073.52,
+      "avg_us": 156.4,
+      "max_us": 22605,
+      "pct_gpu": 0.18
+    },
+    {
+      "name": "void phi::funcs::VectorizedBroadcastKernel<phi::funcs::AddFunctor<phi::dtype::bfloat16>, phi::dtype::bfloat16, 2, 1, 4, 1>(common::Array<char const* restrict, 2>, common::Array<phi::dtype::bfloat16*, 1>, common::Array<bool, 2>, unsigned int, common::Array<phi::kps::details::BroadcastConfig, 2>, int, int, int, phi::funcs::AddFunctor<phi::dtype::bfloat16>)",
+      "calls": 333,
+      "total_ms": 35098.11,
+      "avg_us": 105399.7,
+      "max_us": 211200,
+      "pct_gpu": 0.17
+    },
+    {
+      "name": "mcblas__Mck_bf16gemm_nn_256x256x64_8m1n8k_512t_4stage_bf16_bf16_fp32_sb_0_0",
+      "calls": 171,
+      "total_ms": 30172.16,
+      "avg_us": 176445.4,
+      "max_us": 293376,
+      "pct_gpu": 0.14
+    },
+    {
+      "name": "void phi::funcs::SelectKernel<bool, bool, long, long, phi::IndexFunctor<bool, long, long>, 1, 0>(long*, bool const*, bool const*, long*, phi::IndexFunctor<bool, long, long>, long, long, long)",
+      "calls": 1541,
+      "total_ms": 25318.91,
+      "avg_us": 16430.2,
+      "max_us": 18432,
+      "pct_gpu": 0.12
+    },
+    {
+      "name": "void phi::funcs::CumsumOneBlock<long, long, phi::kps::AddFunctor<long>, 2>(long const*, long*, long, long, phi::kps::AddFunctor<long>)",
+      "calls": 3079,
+      "total_ms": 25146.11,
+      "avg_us": 8167.0,
+      "max_us": 8960,
+      "pct_gpu": 0.12
+    },
+    {
+      "name": "void phi::funcs::VectorizedElementwiseKernel<long, phi::CastFunctor<int, long>, 1, 1, 1>(common::Array<char const* restrict, 1>, common::Array<long*, 1>, long, long, int, phi::CastFunctor<int, long>)",
+      "calls": 6138,
+      "total_ms": 25133.82,
+      "avg_us": 4094.8,
+      "max_us": 4864,
+      "pct_gpu": 0.12
+    },
+    {
+      "name": "void phi::funcs::index_elementwise_with_tensor_kernel<128, 4, phi::GPUIndexElementwiseGetKernel<int, unsigned int>(phi::CustomContext const&, phi::DenseTensor const&, std::vector<phi::DenseTensor const*, std::allocator<phi::DenseTensor const*> > const&, std::vector<long, std::allocator<long> > const&, std::vector<long, std::allocator<long> > const&, std::vector<long, std::allocator<long> > const&, std::vector<long, std::allocator<long> > const&, long, phi::DenseTensor*)::{lambda(long)#1}>(long, phi::GPUIndexElementwiseGetKernel<int, unsigned int>(phi::CustomContext const&, phi::DenseTensor const&, std::vector<phi::DenseTensor const*, std::allocator<phi::DenseTensor const*> > const&, std::vector<long, std::allocator<long> > const&, std::vector<long, std::allocator<long> > const&, std::vector<long, std::allocator<long> > const&, std::vector<long, std::allocator<long> > const&, long, phi::DenseTensor*)::{lambda(long)#1})",
+      "calls": 4600,
+      "total_ms": 24672.77,
+      "avg_us": 5363.6,
+      "max_us": 9728,
+      "pct_gpu": 0.12
+    },
+    {
+      "name": "void phi::ContiguousCaseOneFunc<phi::dtype::bfloat16, 3ul>(phi::dtype::bfloat16 const*, phi::dtype::bfloat16*, common::Array<long, 10ul>, common::Array<long, 6ul>, long)",
+      "calls": 243,
+      "total_ms": 23318.78,
+      "avg_us": 95962.1,
+      "max_us": 99328,
+      "pct_gpu": 0.11
+    },
+    {
+      "name": "mcMemAddressReserve",
+      "calls": 1537,
+      "total_ms": 22594.55,
+      "avg_us": 14700.4,
+      "max_us": 1853632,
+      "pct_gpu": 0.11
+    },
+    {
+      "name": "void phi::funcs::VectorizedElementwiseKernel<phi::dtype::bfloat16, phi::ScaleFunctor<phi::dtype::bfloat16, float>, 1, 1, 4>(common::Array<char const* restrict, 1>, common::Array<phi::dtype::bfloat16*, 1>, long, long, int, phi::ScaleFunctor<phi::dtype::bfloat16, float>)",
+      "calls": 324,
+      "total_ms": 21340.93,
+      "avg_us": 65867.1,
+      "max_us": 70144,
+      "pct_gpu": 0.1
+    },
+    {
+      "name": "mcMemRelease",
+      "calls": 1537,
+      "total_ms": 18715.39,
+      "avg_us": 12176.6,
+      "max_us": 31049,
+      "pct_gpu": 0.09
+    },
+    {
+      "name": "void phi::funcs::VectorizedBroadcastKernel<phi::funcs::MultiplyFunctor<float>, float, 2, 1, 4, 1>(common::Array<char const* restrict, 2>, common::Array<float*, 1>, common::Array<bool, 2>, unsigned int, common::Array<phi::kps::details::BroadcastConfig, 2>, int, int, int, phi::funcs::MultiplyFunctor<float>)",
+      "calls": 324,
+      "total_ms": 18425.34,
+      "avg_us": 56868.3,
+      "max_us": 62720,
+      "pct_gpu": 0.09
+    },
+    {
+      "name": "mcMemAddressFree",
+      "calls": 1537,
+      "total_ms": 18186.54,
+      "avg_us": 11832.5,
+      "max_us": 2939153,
+      "pct_gpu": 0.09
+    },
+    {
+      "name": "void phi::funcs::GetBlockCountKernel<bool, long, 1>(bool const*, long*, long, long)",
+      "calls": 3079,
+      "total_ms": 17000.19,
+      "avg_us": 5521.3,
+      "max_us": 6400,
+      "pct_gpu": 0.08
+    },
+    {
+      "name": "void phi::ContiguousCaseOneFunc<float, 3ul>(float const*, float*, common::Array<long, 10ul>, common::Array<long, 6ul>, long)",
+      "calls": 324,
+      "total_ms": 16513.54,
+      "avg_us": 50967.7,
+      "max_us": 56576,
+      "pct_gpu": 0.08
+    },
+    {
+      "name": "void phi::funcs::VectorizedElementwiseKernel<long, phi::FullFunctor<long, long>, 0, 1, 1>(common::Array<char const* restrict, 0>, common::Array<long*, 1>, long, long, int, phi::FullFunctor<long, long>)",
+      "calls": 4647,
+      "total_ms": 15757.82,
+      "avg_us": 3391.0,
+      "max_us": 14080,
+      "pct_gpu": 0.07
+    },
+    {
+      "name": "void phi::funcs::VectorizedElementwiseKernel<float, phi::CastFunctor<phi::dtype::bfloat16, float>, 1, 1, 4>(common::Array<char const* restrict, 1>, common::Array<float*, 1>, long, long, int, phi::CastFunctor<phi::dtype::bfloat16, float>)",
+      "calls": 1714,
+      "total_ms": 15313.66,
+      "avg_us": 8934.5,
+      "max_us": 27648,
+      "pct_gpu": 0.07
+    }
+  ]
+}

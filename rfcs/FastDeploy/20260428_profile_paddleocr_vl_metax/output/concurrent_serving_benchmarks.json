@@ -1,0 +1,529 @@
+{
+  "S5_concurrent_2": {
+    "concurrency": 2,
+    "repeats": 3,
+    "total_requests": 6,
+    "ok_count": 6,
+    "error_count": 0,
+    "avg_e2e_latency_s": 5.467,
+    "avg_completion_tokens": 234.0,
+    "avg_per_request_throughput_tok_s": 42.77,
+    "aggregate_throughput_tok_s": 79.02,
+    "details": [
+      {
+        "repeat": 1,
+        "wall_time_s": 5.899,
+        "requests": [
+          {
+            "request_id": 0,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.899,
+            "completion_tokens": 256,
+            "throughput_tok_s": 43.4
+          },
+          {
+            "request_id": 1,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.011,
+            "completion_tokens": 212,
+            "throughput_tok_s": 42.31
+          }
+        ]
+      },
+      {
+        "repeat": 2,
+        "wall_time_s": 5.9,
+        "requests": [
+          {
+            "request_id": 0,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.9,
+            "completion_tokens": 256,
+            "throughput_tok_s": 43.39
+          },
+          {
+            "request_id": 1,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.008,
+            "completion_tokens": 212,
+            "throughput_tok_s": 42.33
+          }
+        ]
+      },
+      {
+        "repeat": 3,
+        "wall_time_s": 5.969,
+        "requests": [
+          {
+            "request_id": 0,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.969,
+            "completion_tokens": 256,
+            "throughput_tok_s": 42.89
+          },
+          {
+            "request_id": 1,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.013,
+            "completion_tokens": 212,
+            "throughput_tok_s": 42.29
+          }
+        ]
+      }
+    ]
+  },
+  "S6_concurrent_4": {
+    "concurrency": 4,
+    "repeats": 3,
+    "total_requests": 12,
+    "ok_count": 12,
+    "error_count": 0,
+    "avg_e2e_latency_s": 5.905,
+    "avg_completion_tokens": 234.8,
+    "avg_per_request_throughput_tok_s": 39.71,
+    "aggregate_throughput_tok_s": 146.4,
+    "details": [
+      {
+        "repeat": 1,
+        "wall_time_s": 6.345,
+        "requests": [
+          {
+            "request_id": 0,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 6.258,
+            "completion_tokens": 256,
+            "throughput_tok_s": 40.91
+          },
+          {
+            "request_id": 1,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.362,
+            "completion_tokens": 212,
+            "throughput_tok_s": 39.54
+          },
+          {
+            "request_id": 2,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.653,
+            "completion_tokens": 223,
+            "throughput_tok_s": 39.45
+          },
+          {
+            "request_id": 3,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 6.344,
+            "completion_tokens": 256,
+            "throughput_tok_s": 40.35
+          }
+        ]
+      },
+      {
+        "repeat": 2,
+        "wall_time_s": 6.308,
+        "requests": [
+          {
+            "request_id": 0,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 6.225,
+            "completion_tokens": 256,
+            "throughput_tok_s": 41.12
+          },
+          {
+            "request_id": 1,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.327,
+            "completion_tokens": 212,
+            "throughput_tok_s": 39.8
+          },
+          {
+            "request_id": 2,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.617,
+            "completion_tokens": 223,
+            "throughput_tok_s": 39.7
+          },
+          {
+            "request_id": 3,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 6.307,
+            "completion_tokens": 256,
+            "throughput_tok_s": 40.59
+          }
+        ]
+      },
+      {
+        "repeat": 3,
+        "wall_time_s": 6.589,
+        "requests": [
+          {
+            "request_id": 0,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 6.397,
+            "completion_tokens": 256,
+            "throughput_tok_s": 40.02
+          },
+          {
+            "request_id": 1,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.485,
+            "completion_tokens": 212,
+            "throughput_tok_s": 38.65
+          },
+          {
+            "request_id": 2,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 5.301,
+            "completion_tokens": 199,
+            "throughput_tok_s": 37.54
+          },
+          {
+            "request_id": 3,
+            "status": "ok",
+            "http_status": 200,
+            "e2e_latency_s": 6.588,
+            "completion_tokens": 256,
+            "throughput_tok_s": 38.86
+          }
+        ]
+      }
+    ]
+  },
+  "S7_concurrent_8": {
+    "concurrency": 8,
+    "repeats": 3,
+    "total_requests": 24,
+    "ok_count": 0,
+    "error_count": 24,
+    "avg_e2e_latency_s": 0,
+    "avg_completion_tokens": 0,
+    "avg_per_request_throughput_tok_s": 0,
+    "aggregate_throughput_tok_s": 0,
+    "details": [
+      {
+        "repeat": 1,
+        "wall_time_s": 300.998,
+        "requests": [
+          {
+            "request_id": 0,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.997
+          },
+          {
+            "request_id": 1,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.997
+          },
+          {
+            "request_id": 2,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.997
+          },
+          {
+            "request_id": 3,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.996
+          },
+          {
+            "request_id": 4,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.996
+          },
+          {
+            "request_id": 5,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.996
+          },
+          {
+            "request_id": 6,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.996
+          },
+          {
+            "request_id": 7,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.996
+          }
+        ]
+      },
+      {
+        "repeat": 2,
+        "wall_time_s": 301.002,
+        "requests": [
+          {
+            "request_id": 0,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.001
+          },
+          {
+            "request_id": 1,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.001
+          },
+          {
+            "request_id": 2,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.001
+          },
+          {
+            "request_id": 3,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.0
+          },
+          {
+            "request_id": 4,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.0
+          },
+          {
+            "request_id": 5,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.0
+          },
+          {
+            "request_id": 6,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.0
+          },
+          {
+            "request_id": 7,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.0
+          }
+        ]
+      },
+      {
+        "repeat": 3,
+        "wall_time_s": 301.001,
+        "requests": [
+          {
+            "request_id": 0,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.0
+          },
+          {
+            "request_id": 1,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.0
+          },
+          {
+            "request_id": 2,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 301.0
+          },
+          {
+            "request_id": 3,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.999
+          },
+          {
+            "request_id": 4,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.999
+          },
+          {
+            "request_id": 5,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.999
+          },
+          {
+            "request_id": 6,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.999
+          },
+          {
+            "request_id": 7,
+            "status": "error",
+            "error": "",
+            "e2e_latency_s": 300.999
+          }
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "request_id": 0,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.997
+      },
+      {
+        "request_id": 1,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.997
+      },
+      {
+        "request_id": 2,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.997
+      },
+      {
+        "request_id": 3,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.996
+      },
+      {
+        "request_id": 4,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.996
+      },
+      {
+        "request_id": 5,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.996
+      },
+      {
+        "request_id": 6,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.996
+      },
+      {
+        "request_id": 7,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.996
+      },
+      {
+        "request_id": 0,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.001
+      },
+      {
+        "request_id": 1,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.001
+      },
+      {
+        "request_id": 2,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.001
+      },
+      {
+        "request_id": 3,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.0
+      },
+      {
+        "request_id": 4,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.0
+      },
+      {
+        "request_id": 5,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.0
+      },
+      {
+        "request_id": 6,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.0
+      },
+      {
+        "request_id": 7,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.0
+      },
+      {
+        "request_id": 0,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.0
+      },
+      {
+        "request_id": 1,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.0
+      },
+      {
+        "request_id": 2,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 301.0
+      },
+      {
+        "request_id": 3,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.999
+      },
+      {
+        "request_id": 4,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.999
+      },
+      {
+        "request_id": 5,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.999
+      },
+      {
+        "request_id": 6,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.999
+      },
+      {
+        "request_id": 7,
+        "status": "error",
+        "error": "",
+        "e2e_latency_s": 300.999
+      }
+    ]
+  }
+}

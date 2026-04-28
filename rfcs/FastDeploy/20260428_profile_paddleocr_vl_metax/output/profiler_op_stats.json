@@ -1,0 +1,35 @@
+{
+  "operators": {
+    "slice dygraph": {
+      "cpu_total_ms": 16.950294999999993,
+      "calls": 768
+    },
+    "scale dygraph": {
+      "cpu_total_ms": 1.9410099999999988,
+      "calls": 256
+    },
+    "full dygraph": {
+      "cpu_total_ms": 1.8952969999999996,
+      "calls": 258
+    },
+    "equal dygraph": {
+      "cpu_total_ms": 1.601048,
+      "calls": 258
+    },
+    "sum dygraph": {
+      "cpu_total_ms": 0.020415,
+      "calls": 1
+    },
+    "any dygraph": {
+      "cpu_total_ms": 0.012334,
+      "calls": 1
+    }
+  },
+  "meta": {
+    "e2e_s": 16.081369903869927,
+    "ttft_s": 0.24254179000854492,
+    "tokens": 256,
+    "throughput_tok_s": 15.919041818594973
+  },
+  "note": "GPU kernel data not available \u2014 FastDeploy runs inference in a separate worker process. Use mcTracer for kernel-level profiling."
+}

@@ -1,0 +1,81 @@
+{
+  "sweep_config": {
+    "values": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "model": "/mnt/moark-models/PaddleOCR-VL-1.5",
+    "warmup": 2,
+    "repeat": 3,
+    "prompt": "single image + Recognize this table",
+    "max_tokens": 256
+  },
+  "results": {
+    "1": {
+      "e2e_latency_s": 13.958,
+      "ttft_s": 0.242,
+      "tokens": 256,
+      "throughput_tok_s": 18.34,
+      "latencies_s": [
+        7.109,
+        9.31,
+        25.455
+      ],
+      "ttfts_s": [
+        0.244,
+        0.239,
+        0.242
+      ]
+    },
+    "2": {
+      "e2e_latency_s": 7.611,
+      "ttft_s": 0.239,
+      "tokens": 256,
+      "throughput_tok_s": 33.64,
+      "latencies_s": [
+        7.326,
+        9.71,
+        5.796
+      ],
+      "ttfts_s": [
+        0.237,
+        0.237,
+        0.243
+      ]
+    },
+    "4": {
+      "e2e_latency_s": 5.712,
+      "ttft_s": 0.246,
+      "tokens": 256,
+      "throughput_tok_s": 44.82,
+      "latencies_s": [
+        5.696,
+        5.711,
+        5.729
+      ],
+      "ttfts_s": [
+        0.244,
+        0.243,
+        0.252
+      ]
+    },
+    "8": {
+      "e2e_latency_s": 8.601,
+      "ttft_s": 0.24,
+      "tokens": 256,
+      "throughput_tok_s": 29.76,
+      "latencies_s": [
+        5.859,
+        6.411,
+        13.534
+      ],
+      "ttfts_s": [
+        0.242,
+        0.24,
+        0.237
+      ]
+    }
+  }
+}
