@@ -53,7 +53,7 @@ PaddleOCR-VL-1.5 是基于 PaddlePaddle 的多模态视觉语言模型，总参�
 | MACA 驱动          | 3.6.11                                   |
 | MACA 运行时        | 3.3.0.15                                 |
 | 深度学习框架       | PaddlePaddle 3.4.0.dev20251223           |
-| 部署套件           | FastDeploy 2.5.0 (release/2.4)           |
+| 部署套件           | FastDeploy 2.5.0                         |
 | Custom Device 插件 | paddle-metax-gpu 3.3.0.dev               |
 | 模型               | PaddleOCR-VL-1.5 (0.96B params)          |
 | 模型权重路径       | /mnt/moark-models/PaddleOCR-VL-1.5/      |
