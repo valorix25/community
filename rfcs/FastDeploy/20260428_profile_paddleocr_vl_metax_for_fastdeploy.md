@@ -7,7 +7,7 @@
 | 依赖飞桨版本 | PaddlePaddle 3.4.0.dev20251223                            |
 | 文件名       | 20260428_profile_paddleocr_vl_metax_for_fastdeploy.md     |
 | 前序RFC      | 无                                                        |
-| 实现PR       | 第二阶段提交                                              |
+| 实现PR       | 第一阶段提交                                              |
 
 ---
 
