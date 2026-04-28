@@ -1,0 +1,232 @@
+{
+  "e2e_s": 6.522,
+  "ttft_s": 0.256,
+  "tokens": 256,
+  "throughput_tok_s": 39.25,
+  "gpu_overall": {
+    "util_avg": 6.2,
+    "util_max": 15,
+    "hbm_bw_avg_gb": 45.69,
+    "hbm_bw_max_gb": 444.4,
+    "ccx_avg": 0.0
+  },
+  "num_samples": 27,
+  "raw_samples": [
+    {
+      "timestamp": 1777346071.4563308,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 2,
+      "ccx_avg_pct": 1
+    },
+    {
+      "timestamp": 1777346071.7002008,
+      "gpu_util_pct": 4,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 455063,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346071.940246,
+      "gpu_util_pct": 11,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 32357,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346072.180188,
+      "gpu_util_pct": 14,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 35843,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346072.4202864,
+      "gpu_util_pct": 14,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 41776,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346072.6605175,
+      "gpu_util_pct": 15,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 35984,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346072.9043164,
+      "gpu_util_pct": 8,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 36074,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346073.1442447,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 41830,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346073.3842945,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 27559,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346073.6237636,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 36173,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346073.8641353,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 39545,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346074.1037767,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 32193,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346074.3442378,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 35602,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346074.5842636,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 41564,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346074.8241992,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 35363,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346075.0643497,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 42063,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346075.3039699,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 36017,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346075.5439463,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 35953,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346075.7842684,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 42059,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346076.0283937,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 29066,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346076.2723622,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 36546,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346076.516321,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 36568,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346076.7562695,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 35768,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346076.9962854,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 42271,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346077.2362354,
+      "gpu_util_pct": 5,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 1,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346077.475826,
+      "gpu_util_pct": 4,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 1,
+      "ccx_avg_pct": 0
+    },
+    {
+      "timestamp": 1777346077.7164226,
+      "gpu_util_pct": 3,
+      "mem_used_mb": 49187,
+      "mem_total_mb": 65536,
+      "hbm_bw_mbytes": 2,
+      "ccx_avg_pct": 0
+    }
+  ]
+}

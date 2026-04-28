@@ -26,91 +26,116 @@ paddle.device.set_device('metax_gpu:0')
 OUTPUT_DIR = '/data/output'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# GPU sampling state
-gpu_samples = []
-sampling_active = False
 SAMPLE_INTERVAL = 0.2  # 200ms
+MX_SMI_CMD = ['mx-smi', '--show-usage', '--show-memory',
+              '--show-hbm-bandwidth', '--show-core-usage']
 
 
-def sample_gpu():
-    """Background thread to sample GPU metrics via mx-smi."""
-    while sampling_active:
+def parse_mx_smi_output(output):
+    """Parse mx-smi output into GPU metrics dict. Returns None on parse failure."""
+    gpu_util = None
+    mem_used_kb = 0
+    mem_total_kb = 0
+    hbm_bw = 0
+    ccx_vals = []
+
+    for line in output.split('\n'):
+        if 'GPU' in line and ':' in line and '%' in line and 'VPUE' not in line and 'VPUD' not in line:
+            parts = line.split(':')
+            if len(parts) >= 2:
+                val = parts[-1].strip().replace('%', '').strip()
+                try:
+                    gpu_util = int(val)
+                except ValueError:
+                    pass
+        elif 'vis_vram used' in line:
+            parts = line.split(':')
+            if len(parts) >= 2:
+                try:
+                    mem_used_kb = int(parts[-1].strip().split()[0])
+                except ValueError:
+                    pass
+        elif 'vis_vram total' in line:
+            parts = line.split(':')
+            if len(parts) >= 2:
+                try:
+                    mem_total_kb = int(parts[-1].strip().split()[0])
+                except ValueError:
+                    pass
+        elif 'throughput' in line:
+            parts = line.split(':')
+            if len(parts) >= 2:
+                val = parts[-1].strip().split()[0]
+                try:
+                    hbm_bw = int(val)
+                except ValueError:
+                    pass
+        elif 'CCX' in line:
+            tokens = line.replace('CCX', '').split()
+            for i in range(0, len(tokens) - 1, 2):
+                try:
+                    ccx_vals.append(int(tokens[i]))
+                except ValueError:
+                    pass
+
+    # gpu_util stays None if we never found a GPU line — treat as parse failure
+    if gpu_util is None:
+        return None
+
+    ccx_avg = int(sum(ccx_vals) / len(ccx_vals)) if ccx_vals else 0
+
+    return {
+        'timestamp': time.time(),
+        'gpu_util_pct': gpu_util,
+        'mem_used_mb': mem_used_kb // 1024,
+        'mem_total_mb': mem_total_kb // 1024,
+        'hbm_bw_mbytes': hbm_bw,
+        'ccx_avg_pct': ccx_avg,
+    }
+
+
+def sample_gpu(samples, active_flag, start_barrier):
+    """Background thread to sample GPU metrics via mx-smi.
+
+    Args:
+        samples: list to append results to (owned by caller)
+        active_flag: list[bool], active_flag[0] is the loop control
+        start_barrier: threading.Barrier(2) to sync with inference start
+    """
+    start_barrier.wait()
+    while active_flag[0]:
         try:
-            r = subprocess.run(
-                ['mx-smi', '--show-usage', '--show-memory',
-                 '--show-hbm-bandwidth', '--show-core-usage'],
-                capture_output=True, text=True, timeout=3,
-            )
-            output = r.stdout
-
-            gpu_util = 0
-            mem_used_kb = 0
-            mem_total_kb = 0
-            hbm_bw = 0
-            ccx_vals = []
-
-            for line in output.split('\n'):
-                if 'GPU' in line and ':' in line and '%' in line and 'VPUE' not in line and 'VPUD' not in line:
-                    parts = line.split(':')
-                    if len(parts) >= 2:
-                        val = parts[-1].strip().replace('%', '').strip()
-                        try:
-                            gpu_util = int(val)
-                        except ValueError:
-                            pass
-                elif 'vis_vram used' in line:
-                    parts = line.split(':')
-                    if len(parts) >= 2:
-                        try:
-                            mem_used_kb = int(parts[-1].strip().split()[0])
-                        except ValueError:
-                            pass
-                elif 'vis_vram total' in line:
-                    parts = line.split(':')
-                    if len(parts) >= 2:
-                        try:
-                            mem_total_kb = int(parts[-1].strip().split()[0])
-                        except ValueError:
-                            pass
-                elif 'throughput' in line:
-                    parts = line.split(':')
-                    if len(parts) >= 2:
-                        val = parts[-1].strip().split()[0]
-                        try:
-                            hbm_bw = int(val)
-                        except ValueError:
-                            pass
-                elif 'CCX' in line:
-                    tokens = line.replace('CCX', '').split()
-                    for i in range(0, len(tokens) - 1, 2):
-                        try:
-                            ccx_vals.append(int(tokens[i]))
-                        except ValueError:
-                            pass
-
-            ccx_avg = int(sum(ccx_vals) / len(ccx_vals)) if ccx_vals else 0
-
-            gpu_samples.append({
-                'timestamp': time.time(),
-                'gpu_util_pct': gpu_util,
-                'mem_used_mb': mem_used_kb // 1024,
-                'mem_total_mb': mem_total_kb // 1024,
-                'hbm_bw_mbytes': hbm_bw,
-                'ccx_avg_pct': ccx_avg,
-            })
+            r = subprocess.run(MX_SMI_CMD, capture_output=True, text=True, timeout=3)
+            if r.returncode != 0:
+                samples.append({'timestamp': time.time(), 'error': f'mx-smi rc={r.returncode}'})
+            else:
+                parsed = parse_mx_smi_output(r.stdout)
+                if parsed is not None:
+                    samples.append(parsed)
+                else:
+                    samples.append({'timestamp': time.time(), 'error': 'mx-smi parse failed: no GPU line'})
+        except subprocess.TimeoutExpired:
+            samples.append({'timestamp': time.time(), 'error': 'mx-smi timeout'})
         except Exception as e:
-            gpu_samples.append({'timestamp': time.time(), 'error': str(e)})
+            samples.append({'timestamp': time.time(), 'error': str(e)})
 
         time.sleep(SAMPLE_INTERVAL)
 
 
 def run_inference_with_sampling(llm, prompt, sampling_params):
     """Run a single inference with GPU sampling, return (output, e2e, ttft, samples)."""
-    gpu_samples.clear()
+    samples = []
+    active_flag = [True]
+    # Barrier ensures sampler thread starts before inference begins
+    start_barrier = threading.Barrier(2, timeout=10)
 
-    sampling_active = True
-    sampler_thread = threading.Thread(target=sample_gpu, daemon=True)
+    sampler_thread = threading.Thread(
+        target=sample_gpu, args=(samples, active_flag, start_barrier), daemon=True,
+    )
     sampler_thread.start()
+
+    # Wait for sampler to be ready before starting inference
+    start_barrier.wait()
 
     paddle.device.synchronize("metax_gpu:0")
     start = time.perf_counter()
@@ -118,7 +143,7 @@ def run_inference_with_sampling(llm, prompt, sampling_params):
     paddle.device.synchronize("metax_gpu:0")
     end = time.perf_counter()
 
-    sampling_active = False
+    active_flag[0] = False
     sampler_thread.join(timeout=5)
 
     e2e = end - start
@@ -127,14 +152,16 @@ def run_inference_with_sampling(llm, prompt, sampling_params):
     if output[0].metrics is not None and hasattr(output[0].metrics, 'first_token_time'):
         ttft = output[0].metrics.first_token_time
 
-    return output, e2e, ttft, list(gpu_samples)
+    return output, e2e, ttft, samples
 
 
 def summarize_samples(samples, e2e, ttft, n_tokens, separate_phases=False):
     """Build result dict from GPU samples."""
     valid = [s for s in samples if 'error' not in s]
     if not valid:
-        return {'e2e_s': round(e2e, 3), 'error': 'no valid GPU samples'}
+        errors = [s for s in samples if 'error' in s]
+        error_detail = errors[0]['error'] if errors else 'unknown'
+        return {'e2e_s': round(e2e, 3), 'error': f'no valid GPU samples ({len(samples)} total, first: {error_detail})'}
 
     utils = [s['gpu_util_pct'] for s in valid]
     bws = [s['hbm_bw_mbytes'] for s in valid]
