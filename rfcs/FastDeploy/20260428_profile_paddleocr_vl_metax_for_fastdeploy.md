@@ -1,21 +1,21 @@
-| 项目         | 内容                                                      |
-| ------------ | --------------------------------------------------------- |
-| 任务名称     | PaddleOCR-VL-1.5 Metax GPU 深度推理性能瓶颈剖析与优化方案 |
-| 提交作者     | valorix25                                                 |
-| 提交时间     | 2026-04-28                                                |
-| 版本号       | v1.0                                                      |
-| 依赖飞桨版本 | PaddlePaddle 3.4.0.dev20251223                            |
-| 文件名       | 20260428_profile_paddleocr_vl_metax_for_fastdeploy.md     |
-| 前序RFC      | 无                                                        |
-| 实现PR       | 第一阶段提交                                              |
+| 项目     | 内容                                                          |
+| ------ | ----------------------------------------------------------- |
+| 任务名称   | PaddleOCR-VL-1.5 Metax GPU 深度推理性能瓶颈剖析与优化方案                  |
+| 提交作者   | valorix25                                                   |
+| 提交时间   | 2026-04-28                                                  |
+| 版本号    | V1.0                                                        |
+| 依赖飞桨版本 | develop                                                    |
+| 文件名    | 20260428\_profile\_paddleocr\_vl\_metax\_for\_fastdeploy.md |
+| 前序RFC  | 无                                                           |
+| 实现PR   | 待提交                                                      |
 
----
+***
 
 # 一、概述
 
 ## 1. 相关背景
 
-PaddleOCR-VL-1.5 是基于 PaddlePaddle 的多模态视觉语言模型，总参数量 0.96B（LLM 0.47B + Vision Encoder 0.47B + Projector 0.03B），在文档智能解析场景具有广泛应用。当前在沐曦 Metax C500 GPU（64GB HBM, MACA 3.6.11/3.3.0.15, sm_version=80）上通过 FastDeploy 2.5.0 部署推理，基线性能存在显著瓶颈：
+PaddleOCR-VL-1.5 是基于 PaddlePaddle 的多模态视觉语言模型，总参数量 0.96B（LLM 0.47B + Vision Encoder 0.47B + Projector 0.03B），在文档智能解析场景具有广泛应用。当前在沐曦 Metax C500 GPU（64GB HBM, MACA 3.6.11/3.3.0.15, sm\_version=80）上通过 FastDeploy 2.5.0 部署推理，基线性能存在显著瓶颈：
 
 - 单请求端到端延迟 5.93s，Decode 吞吐仅 43.18 tok/s
 - CUDAGraph 完全失效，kernel launch 开销占 GPU 时间 21.58%
@@ -33,7 +33,7 @@ PaddleOCR-VL-1.5 是基于 PaddlePaddle 的多模态视觉语言模型，总参�
 
 ## 3. 意义
 
-- 为第二阶段算子优化提供**数据驱动的优化靶点排序**（P0-P3）
+- 为第二阶段算子优化提供**数据驱动的优化靶点排序**
 - CUDAGraph 修复预期带来 Decode 2-3x 加速（43→86-130 tok/s），是投入产出比最高的优化项
 - 建立国产 GPU（Metax C500）上 VLM 推理性能基准，为后续更多模型迁移提供 profiling SOP
 
@@ -41,35 +41,35 @@ PaddleOCR-VL-1.5 是基于 PaddlePaddle 的多模态视觉语言模型，总参�
 
 无前序 RFC。本次为该任务首次提交。
 
----
+***
 
-# 二、现状分析
+# 二、飞桨现状
 
 ## 1. 测试环境
 
-| 项目               | 规格                                     |
-| ------------------ | ---------------------------------------- |
-| GPU                | 沐曦 Metax C500, 64GB HBM, sm_version=80 |
-| MACA 驱动          | 3.6.11                                   |
-| MACA 运行时        | 3.3.0.15                                 |
-| 深度学习框架       | PaddlePaddle 3.4.0.dev20251223           |
-| 部署套件           | FastDeploy 2.5.0                         |
-| Custom Device 插件 | paddle-metax-gpu 3.3.0.dev               |
-| 模型               | PaddleOCR-VL-1.5 (0.96B params)          |
-| 模型权重路径       | /mnt/moark-models/PaddleOCR-VL-1.5/      |
+| 项目               | 规格                                      |
+| ---------------- | --------------------------------------- |
+| GPU              | 沐曦 Metax C500, 64GB HBM, sm\_version=80 |
+| MACA 驱动          | 3.6.11                                  |
+| MACA 运行时         | 3.3.0.15                                |
+| 深度学习框架           | PaddlePaddle 3.4.0.dev20251223          |
+| 部署套件             | FastDeploy 2.5.0                        |
+| Custom Device 插件 | paddle-metax-gpu 3.3.0.dev              |
+| 模型               | PaddleOCR-VL-1.5 (0.96B params)         |
+| 模型权重路径           | /mnt/moark-models/PaddleOCR-VL-1.5/     |
 
 ## 2. 基线性能（S1 场景）
 
-S1 场景：单图输入 + "Recognize this table"，max_tokens=256，FD_ENC_DEC_BLOCK_NUM=2
+S1 场景：单图输入 + "Recognize this table"，max\_tokens=256，FD\_ENC\_DEC\_BLOCK\_NUM=2
 
-| 指标                 | 数值          |
-| -------------------- | ------------- |
-| 端到端延迟 (E2E)     | 5.93s         |
+| 指标                | 数值            |
+| ----------------- | ------------- |
+| 端到端延迟 (E2E)       | 5.93s         |
 | 首 token 延迟 (TTFT) | 0.245s        |
-| Decode 吞吐          | 43.18 tok/s   |
-| 纯 Decode 阶段吞吐   | 45.04 tok/s   |
-| Prefill 时间占比     | 4.1% (0.245s) |
-| Decode 时间占比      | 95.9% (5.68s) |
+| Decode 吞吐         | 43.18 tok/s   |
+| 纯 Decode 阶段吞吐     | 45.04 tok/s   |
+| Prefill 时间占比      | 4.1% (0.245s) |
+| Decode 时间占比       | 95.9% (5.68s) |
 
 **核心结论**：Decode 占 96%+ 时间，是优化的主战场。Prefill 仅占 4%，非当前瓶颈。
 
@@ -87,50 +87,50 @@ Decode:  #running-req=1, cuda_graph=False, gen throughput=12.35 tok/s  (warmup �
 
 **Warmup 首次 Decode 吞吐跳变**（12.35 → 43.18 tok/s，3.5x）：首次 Decode step 触发 CUDAGraph capture 尝试（失败后回退），同时 KV Cache block 分配和 JIT 编译首次执行，导致首步延迟异常。
 
-**#cached-token=0 的场景价值**：当前 prefix_caching=False，单图多轮对话（S2）中每轮 Prefill 仍重新计算全部 tokens。若启用 prefix_caching，多轮对话的共享 prefix（系统 prompt + 图片特征）可缓存复用，预期 TTFT 从 0.245s 降低至仅计算新增 tokens 的时间。
+**#cached-token=0 的场景价值**：当前 prefix\_caching=False，单图多轮对话（S2）中每轮 Prefill 仍重新计算全部 tokens。若启用 prefix\_caching，多轮对话的共享 prefix（系统 prompt + 图片特征）可缓存复用，预期 TTFT 从 0.245s 降低至仅计算新增 tokens 的时间。
 
 ### 3.2 多请求并发调度行为
 
 | 场景 | 并发数 | Avg E2E(s) | Avg Tokens | Per-req 吞吐(tok/s) | 聚合吞吐(tok/s) | OK/Err |
-| ---- | ------ | ---------- | ---------- | ------------------- | --------------- | ------ |
-| S5   | 2路    | 5.47       | 234        | 42.77               | 79.02           | 6/0    |
-| S6   | 4路    | 5.91       | 235        | 39.71               | 146.40          | 12/0   |
-| S7   | 8路    | -          | -          | 0                   | 0               | 0/24   |
+| -- | --- | ---------- | ---------- | ----------------- | ----------- | ------ |
+| S5 | 2路  | 5.47       | 234        | 42.77             | 79.02       | 6/0    |
+| S6 | 4路  | 5.91       | 235        | 39.71             | 146.40      | 12/0   |
+| S7 | 8路  | -          | -          | 0                 | 0           | 0/24   |
 
 **Continuous batching 验证**：
 
-| 场景    | wall_time(s) | 串行预期(s) | batch 加速比 |
-| ------- | ------------ | ----------- | ------------ |
-| S5(2路) | 5.92         | 11.86       | 2.00x        |
-| S6(4路) | 6.41         | 23.72       | 3.70x        |
+| 场景     | wall\_time(s) | 串行预期(s) | batch 加速比 |
+| ------ | ------------- | ------- | --------- |
+| S5(2路) | 5.92          | 11.86   | 2.00x     |
+| S6(4路) | 6.41          | 23.72   | 3.70x     |
 
-wall_time ≈ 单请求 E2E（5.93s），说明 2路/4路请求几乎同时完成——Prefill 串行处理（每个请求 989 tokens < max_num_batched_tokens=2048），Decode 阶段 batch 合并，continuous batching 正常工作。
+wall\_time ≈ 单请求 E2E（5.93s），说明 2路/4路请求几乎同时完成——Prefill 串行处理（每个请求 989 tokens < max\_num\_batched\_tokens=2048），Decode 阶段 batch 合并，continuous batching 正常工作。
 
 **并发效率分析**（memory-bound 理论模型）：
 
-| 场景    | 实测聚合吞吐 | 理论上限(无CG) | 效率  |
-| ------- | ------------ | -------------- | ----- |
-| S5(2路) | 79.02 tok/s  | 86 tok/s       | 91.5% |
-| S6(4路) | 146.40 tok/s | 173 tok/s      | 84.8% |
+| 场景     | 实测聚合吞吐       | 理论上限(无CG) | 效率    |
+| ------ | ------------ | --------- | ----- |
+| S5(2路) | 79.02 tok/s  | 86 tok/s  | 91.5% |
+| S6(4路) | 146.40 tok/s | 173 tok/s | 84.8% |
 
 4路效率低于 2路（84.8% vs 91.5%），原因：per-request 吞吐从 42.77 降至 39.71 tok/s（下降 8.0%），batch 增大后 Prefill 串行排队时间增加，且 decode batch 合并的调度开销增大。
 
 ### 3.3 8路超时根因分析（排除法）
 
-1. **KV Cache OOM**：排除。max_model_len=16384 时 per_seq=258 blocks，8路需要 2064 blocks × 0.59 MB/block = 1.19 GB。可用显存 42.4 GB（0.7 × 64GB - 1.92GB 权重），最大并发 ~285 序列。8路远未触及上限。
+1. **KV Cache OOM**：排除。max\_model\_len=16384 时 per\_seq=258 blocks，8路需要 2064 blocks × 0.59 MB/block = 1.19 GB。可用显存 42.4 GB（0.7 × 64GB - 1.92GB 权重），最大并发 \~285 序列。8路远未触及上限。
 2. **超时阈值太短**：排除。8路完全串行预估 8 × 5.93s = 47.4s，远小于 300s 超时。
-3. **max_num_seqs=8 边界条件**：疑似。max_num_seqs=8（`args_utils.py:146` 默认值），8路并发刚好等于上限。server 日志显示所有 8 个请求同时触发 `CancelledError`（`serving_chat.py:592` 的 `asyncio.wait_for(response_queue.get(), timeout=10)`），server 端 10s 内部超时后断开连接。
+3. **max\_num\_seqs=8 边界条件**：疑似。max\_num\_seqs=8（`args_utils.py:146` 默认值），8路并发刚好等于上限。server 日志显示所有 8 个请求同时触发 `CancelledError`（`serving_chat.py:592` 的 `asyncio.wait_for(response_queue.get(), timeout=10)`），server 端 10s 内部超时后断开连接。
 
-### 3.4 FD_ENC_DEC_BLOCK_NUM 影响
+### 3.4 FD\_ENC\_DEC\_BLOCK\_NUM 影响
 
-| block_num | E2E(s) | TTFT(s) | tok/s | tokens |
-| --------- | ------ | ------- | ----- | ------ |
-| 1         | 13.96  | 0.242   | 18.34 | 256    |
-| 2         | 7.61   | 0.239   | 33.64 | 256    |
-| 4         | 5.71   | 0.246   | 44.82 | 256    |
-| 8         | 8.60   | 0.24    | 29.76 | 256    |
+| block\_num | E2E(s) | TTFT(s) | tok/s | tokens |
+| ---------- | ------ | ------- | ----- | ------ |
+| 1          | 13.96  | 0.242   | 18.34 | 256    |
+| 2          | 7.61   | 0.239   | 33.64 | 256    |
+| 4          | 5.71   | 0.246   | 44.82 | 256    |
+| 8          | 8.60   | 0.24    | 29.76 | 256    |
 
-**最优值=4**：block_num=4 时吞吐最高（44.82 tok/s），比默认值 2 提升 33%。TTFT 不受影响（~0.24s），说明 Vision Encoder 分块不影响 Prefill 延迟，但影响 Decode 阶段的 KV Cache 分配策略。
+**最优值=4**：block\_num=4 时吞吐最高（44.82 tok/s），比默认值 2 提升 33%。TTFT 不受影响（\~0.24s），说明 Vision Encoder 分块不影响 Prefill 延迟，但影响 Decode 阶段的 KV Cache 分配策略。
 
 ## 4. GPU 利用率分析
 
@@ -138,27 +138,27 @@ wall_time ≈ 单请求 E2E（5.93s），说明 2路/4路请求几乎同时完�
 
 GPU 采样脚本（`gpu_util_sampling.py`）通过 `mx-smi` 200ms 间隔采集 GPU 利用率、显存、HBM 带宽和 CCX 数据，`--separate-phases` 模式下拆分 Prefill/Decode 阶段。实测数据（修复采样线程竞态条件后）：
 
-| 场景 | GPU util avg | GPU util max | HBM BW avg | HBM BW max | 样本数 |
-| -- | -- | -- | -- | -- | -- |
-| S1 (单图) | 5.8% | 14% | 43.05 GB/s | 477.03 GB/s | 29 |
-| S4 (纯文本) | 3.2% | 4% | 34.28 GB/s | 40.71 GB/s | 23 |
+| 场景       | GPU util avg | GPU util max | HBM BW avg | HBM BW max  | 样本数 |
+| -------- | ------------ | ------------ | ---------- | ----------- | --- |
+| S1 (单图)  | 5.8%         | 14%          | 43.05 GB/s | 477.03 GB/s | 29  |
+| S4 (纯文本) | 3.2%         | 4%           | 34.28 GB/s | 40.71 GB/s  | 23  |
 
 单请求 Decode 阶段 GPU 利用率极低（avg 5-6%），与 mcTracer 分析一致：无 CUDAGraph 下 kernel launch 开销占 21.58% GPU 时间，实际计算占比极小。Prefill 阶段利用率略高（S1 Prefill avg 6%，仅 2 个采样点），但受 200ms 采样颗粒度限制，0.245s 的 Prefill 仅能采集 1-2 个样本，数值精度有限。
 
 ### 4.2 Prefill vs Decode 分离
 
-| 阶段         | 时间占比              | 特征                          |
-| ------------ | --------------------- | ----------------------------- |
-| Prefill (S1) | 0.245s / 5.93s = 4.1% | 计算密集，989 tokens 批处理   |
+| 阶段           | 时间占比                  | 特征                      |
+| ------------ | --------------------- | ----------------------- |
+| Prefill (S1) | 0.245s / 5.93s = 4.1% | 计算密集，989 tokens 批处理     |
 | Decode (S1)  | 5.68s / 5.93s = 95.9% | launch 开销受限，无 CUDAGraph |
-| Prefill (S4) | 0.026s / 5.39s = 0.5% | 仅 19 tokens，极快            |
+| Prefill (S4) | 0.026s / 5.39s = 0.5% | 仅 19 tokens，极快          |
 | Decode (S4)  | 5.36s / 5.39s = 99.5% | 同样 launch 开销受限          |
 
 **核心瓶颈**：Decode 占 96%+ 时间。无 CUDAGraph 下每个 Decode step 的 kernel 单独 launch，mcLaunchKernel 占 21.58% GPU 时间。CUDAGraph 启用后才会暴露真正的内存带宽瓶颈。
 
 ### 4.3 内存带宽估算
 
-每 Decode 步内存读取：LLM 权重 ~0.93 GB + KV Cache ~2.25 MB（2 KV heads × 128 × 2 × 256 × 18 layers）≈ 0.93 GB/step。C500 HBM 实测读峰值 ~1.51 TB/s，带宽利用率：0.93 GB / (1.51 TB/s × 22.2ms) ≈ 2.8%。
+每 Decode 步内存读取：LLM 权重 \~0.93 GB + KV Cache \~2.25 MB（2 KV heads × 128 × 2 × 256 × 18 layers）≈ 0.93 GB/step。C500 HBM 实测读峰值 \~1.51 TB/s，带宽利用率：0.93 GB / (1.51 TB/s × 22.2ms) ≈ 2.8%。
 
 **低利用率原因**：无 CUDAGraph 时 kernel launch 开销（mcLaunchKernel 21.58%）占大量 GPU 时间，实际计算时间远小于总时间。当前瓶颈是 launch 开销而非带宽；CUDAGraph 启用后带宽才会成为瓶颈。
 
@@ -170,18 +170,18 @@ mcTracer 采集 GPU kernel 级数据，总 GPU 时间 21180.4s（含初始化+�
 
 排除 mcModuleLoad（初始化，25.79%）后的推理 kernel 排名：
 
-| #  | Kernel                   | Calls   | Total(ms) | Avg(us) | %GPU   | 来源模块                      | 瓶颈类型                     |
-| -- | ------------------------ | ------- | --------- | ------- | ------ | ----------------------------- | ---------------------------- |
-| 1  | mcLaunchKernel           | 395865  | 4570093   | 11545   | 21.58% | Runtime                       | **kernel launch 开销** |
-| 2  | flash_fwd_splitkv_kernel | 27557   | 2422064   | 87893   | 11.44% | Metax FA (Decode)             | 计算密集                     |
-| 3  | mcMemcpyAsync            | 27442   | 1951422   | 71111   | 9.21%  | Runtime                       | 内存拷贝                     |
-| 4  | b16gemvn_splitk_kernel   | 55076   | 974798    | 17699   | 4.60%  | weight_only_linear (QKV+FFN)  | 内存受限                     |
-| 5  | b16gemvn_kernel (64,4,4) | 27538   | 496612    | 18034   | 2.34%  | weight_only_linear (FFN down) | 内存受限                     |
-| 6  | RmsNormBlockSMemImpl     | 55220   | 462008    | 8367    | 2.18%  | 语言模型每层                  | 计算                         |
-| 7  | b16gemvn_kernel (64,4,8) | 27539   | 379443    | 13778   | 1.79%  | weight_only_linear (K/V proj) | 内存受限                     |
-| 8  | mcStreamSynchronize      | 19000   | 338949    | 17839   | 1.60%  | Runtime                       | 同步等待                     |
-| 9  | memcpy HTOD              | 4071    | 331105    | 81333   | 1.56%  | Runtime (Host→Device)        | 内存拷贝                     |
-| 10 | mcSetDevice              | 1092415 | 285282    | 261     | 1.35%  | Runtime                       | 设备管理                     |
+| #  | Kernel                      | Calls   | Total(ms) | Avg(us) | %GPU   | 来源模块                            | 瓶颈类型                 |
+| -- | --------------------------- | ------- | --------- | ------- | ------ | ------------------------------- | -------------------- |
+| 1  | mcLaunchKernel              | 395865  | 4570093   | 11545   | 21.58% | Runtime                         | **kernel launch 开销** |
+| 2  | flash\_fwd\_splitkv\_kernel | 27557   | 2422064   | 87893   | 11.44% | Metax FA (Decode)               | 计算密集                 |
+| 3  | mcMemcpyAsync               | 27442   | 1951422   | 71111   | 9.21%  | Runtime                         | 内存拷贝                 |
+| 4  | b16gemvn\_splitk\_kernel    | 55076   | 974798    | 17699   | 4.60%  | weight\_only\_linear (QKV+FFN)  | 内存受限                 |
+| 5  | b16gemvn\_kernel (64,4,4)   | 27538   | 496612    | 18034   | 2.34%  | weight\_only\_linear (FFN down) | 内存受限                 |
+| 6  | RmsNormBlockSMemImpl        | 55220   | 462008    | 8367    | 2.18%  | 语言模型每层                          | 计算                   |
+| 7  | b16gemvn\_kernel (64,4,8)   | 27539   | 379443    | 13778   | 1.79%  | weight\_only\_linear (K/V proj) | 内存受限                 |
+| 8  | mcStreamSynchronize         | 19000   | 338949    | 17839   | 1.60%  | Runtime                         | 同步等待                 |
+| 9  | memcpy HTOD                 | 4071    | 331105    | 81333   | 1.56%  | Runtime (Host→Device)           | 内存拷贝                 |
+| 10 | mcSetDevice                 | 1092415 | 285282    | 261     | 1.35%  | Runtime                         | 设备管理                 |
 
 ### 5.2 核心算子详细分析
 
@@ -190,12 +190,12 @@ mcTracer 采集 GPU kernel 级数据，总 GPU 时间 21180.4s（含初始化+�
 - 395865 次调用，平均 11.5ms/次
 - 根因：无 CUDAGraph，每个 Decode step 所有 kernel 单独 launch
 - 修复：启用 CUDAGraph 可消除此开销，预期 2-3x Decode 加速
-- 影响代码路径：`cudagraph_piecewise_backend.py` → `CUDAGraphAllocator` → FastDeploy 调度器
+- 影响代码路径：`cudagraph_piecewise_backend.py` → Paddle 内存分配层 → FastDeploy 调度器
 
-**算子 2：flash_fwd_splitkv_kernel (11.44%)** — Metax FA Decode 路径
+**算子 2：flash\_fwd\_splitkv\_kernel (11.44%)** — Metax FA Decode 路径
 
-- 27557 次调用（18层×~1531 decode steps），GQA 2 KV heads 的 split-KV 实现
-- Prefill 路径使用 flash_fwd_kernel（81 calls, 0.35%），两者均正常工作
+- 27557 次调用（18层×\~1531 decode steps），GQA 2 KV heads 的 split-KV 实现
+- Prefill 路径使用 flash\_fwd\_kernel（81 calls, 0.35%），两者均正常工作
 - 当前性能合理，CUDAGraph 启用后此算子将成为主要计算瓶颈
 
 **算子 3：mcMemcpyAsync (9.21%)** — 内存拷贝
@@ -204,15 +204,15 @@ mcTracer 采集 GPU kernel 级数据，总 GPU 时间 21180.4s（含初始化+�
 - 主要来源：KV Cache block 拷贝、权重加载、中间 tensor 搬运
 - CUDAGraph 启用后部分拷贝可被 graph capture 优化
 
-**算子 4：b16gemvn 系列 (合计 9.75%)** — weight_only_linear + lm_head
+**算子 4：b16gemvn 系列 (合计 9.75%)** — weight\_only\_linear + lm\_head
 
-- splitk(4.60%) + (64,4,4)(2.34%) + (64,4,8)(1.79%) + row_double_buffer(1.02%)
-- row_double_buffer 是 lm_head（1024→103424，1 call/step），其余为 per-layer 投影
+- splitk(4.60%) + (64,4,4)(2.34%) + (64,4,8)(1.79%) + row\_double\_buffer(1.02%)
+- row\_double\_buffer 是 lm\_head（1024→103424，1 call/step），其余为 per-layer 投影
 - CUDAGraph 启用后才是真正的内存带宽瓶颈
 
 **算子 5：RmsNormBlockSMemImpl (2.18%)** — RMSNorm
 
-- 55220 次调用（每层2次×18层×~1531 steps）
+- 55220 次调用（每层2次×18层×\~1531 steps）
 - 性能正常，CUDAGraph capture 失败导致无法批量执行
 
 **算子 6：mcStreamSynchronize (1.60%)** — 同步等待
@@ -221,7 +221,7 @@ mcTracer 采集 GPU kernel 级数据，总 GPU 时间 21180.4s（含初始化+�
 - 反映了无 CUDAGraph 下频繁的 stream 同步需求
 - CUDAGraph 启用后同步次数大幅减少
 
-**算子 7：update_value_by_repeat_times (1.23%)** — Sampling rejection
+**算子 7：update\_value\_by\_repeat\_times (1.23%)** — Sampling rejection
 
 - 1537 次调用，平均 169.8ms/次
 - rejection sampling 的 repeat times 更新逻辑
@@ -242,7 +242,7 @@ mcTracer 采集 GPU kernel 级数据，总 GPU 时间 21180.4s（含初始化+�
 
 **现象**：`paddle.is_compiled_with_cuda()` 返回 False → `unique_memory_pool_id` 保持 None → CUDAGraph 路径的 memory pool 机制失效
 
-**根因**：Metax GPU 通过 Custom Device（"metax_gpu"）接入 Paddle，`is_compiled_with_cuda()` 仅对原生 CUDA 编译返回 True。Metax 路径未被识别为支持 CUDAGraph 的设备。
+**根因**：Metax GPU 通过 Custom Device（"metax\_gpu"）接入 Paddle，`is_compiled_with_cuda()` 仅对原生 CUDA 编译返回 True。Metax 路径未被识别为支持 CUDAGraph 的设备。
 
 **修复方案**：
 
@@ -279,10 +279,10 @@ if paddle.is_compiled_with_cuda() or paddle.device.is_compiled_with_custom_devic
 
 ### 6.5 错误码映射（调试参考）
 
-| 层级        | 错误码 | 含义                                                                  |
-| ----------- | ------ | --------------------------------------------------------------------- |
-| MACA 原生   | 900    | mcErrorStreamCaptureUnsupported — capture 模式下 mcMalloc 不支持     |
-| Paddle 报告 | 3      | CustomDevice error — Paddle custom device 层内部映射，非 MACA 原生码 |
+| 层级        | 错误码 | 含义                                                         |
+| --------- | --- | ---------------------------------------------------------- |
+| MACA 原生   | 900 | mcErrorStreamCaptureUnsupported — capture 模式下 mcMalloc 不支持 |
+| Paddle 报告 | 3   | CustomDevice error — Paddle custom device 层内部映射，非 MACA 原生码 |
 
 ### 6.6 量化影响
 
@@ -292,44 +292,76 @@ mcLaunchKernel 占 21.58% GPU 时间 → CUDAGraph 可消除，预期 Decode 2-3
 
 Metax 平台走独立 FA 后端（`metax/attention/flash_attn_backend.py`），`flash_fwd_splitkv_kernel` 正常工作（27557 次调用，11.44%），GQA 2 KV heads 下无异常。"Only support CUDA version flash attention" 日志来自 CUDA 后端，Metax 不走该路径。Flash Attention 非瓶颈。
 
----
+***
 
 # 三、业内方案调研
 
 ## 1. CUDAGraph 在各框架中的国产 GPU 支持
 
-| 框架              | 国产 GPU CUDAGraph 支持     | 实现方式                                                              |
-| ----------------- | --------------------------- | --------------------------------------------------------------------- |
-| vLLM (v0.6+)      | 昆仑芯 XPU 支持, 其他待适配 | `CustomAllReduce` + 平台检测 `is_cudagraph_supported()`           |
-| TRT-LLM           | 昆仑芯/寒武纪通过插件适配   | TensorRT plugin 机制，独立编译 CUDAGraph capture 路径                 |
-| TGI (HuggingFace) | 无国产 GPU CUDAGraph 支持   | 依赖 CUDA 原生，无 Custom Device 适配                                 |
-| FastDeploy (当前) | MACA 白名单内但实际不可用   | `use_cudagraph=True` 但缺少 `is_cudagraph_supported()` 运行时检测 |
+| 框架                | 国产 GPU CUDAGraph 支持  | 实现方式                                                      |
+| ----------------- | -------------------- | --------------------------------------------------------- |
+| vLLM (v0.6+)      | 昆仑芯 XPU 支持, 其他待适配    | `CustomAllReduce` + 平台级 CUDAGraph 适配（各平台独立实现）       |
+| TRT-LLM           | 昆仑芯/寒武纪通过插件适配        | TensorRT plugin 机制，独立编译 CUDAGraph capture 路径              |
+| TGI (HuggingFace) | 无国产 GPU CUDAGraph 支持 | 依赖 CUDA 原生，无 Custom Device 适配                             |
+| FastDeploy (当前)   | MACA 白名单内但实际不可用      | `use_cudagraph=True` 但缺少 `is_cudagraph_supported()` 运行时检测 |
 
-**关键差异**：vLLM 通过 `is_cudagraph_supported()` 运行时检测优雅降级，FastDeploy 缺少此机制导致白名单内的 MACA 静默失败。
+**关键差异**：vLLM 通过各平台独立实现 CUDAGraph 适配并优雅降级，FastDeploy 缺少运行时检测机制导致白名单内的 MACA 静默失败。
 
 ## 2. 异步内存分配在 CUDAGraph 中的处理
 
-| 框架          | Capture 期间内存分配策略                                                                                 |
-| ------------- | -------------------------------------------------------------------------------------------------------- |
-| PyTorch 2.x   | `c10::CUDA::CUDACachingAllocator` 使用 `cudaMallocAsync`（CUDA 11.2+）                               |
-| vLLM          | 复用 PyTorch 的 `cudaMallocAsync`，Custom Device 通过 `CustomCachingAllocator` 适配                  |
+| 框架          | Capture 期间内存分配策略                                                                     |
+| ----------- | ------------------------------------------------------------------------------------ |
+| PyTorch 2.x | `c10::CUDA::CUDACachingAllocator` 使用 `cudaMallocAsync`（CUDA 11.2+）                   |
+| vLLM        | 复用 PyTorch 的 `cudaMallocAsync`，Custom Device 通过 `CustomCachingAllocator` 适配          |
 | Paddle (当前) | `CUDAGraphAllocator` 在 CUDA 路径使用 `cudaMallocAsync`，Custom Device 路径仍用 `mcMalloc`（同步） |
 
 **根因**：Paddle 的 Custom Device CUDAGraph 路径未适配异步内存分配 API，是第二层阻塞的直接原因。
 
 ## 3. 并发调度策略对比
 
-| 框架              | Continuous Batching  | Chunked Prefill | Prefix Caching |
-| ----------------- | -------------------- | --------------- | -------------- |
-| vLLM              | ✅ 默认开启          | ✅ 默认开启     | ✅ 默认开启    |
-| TRT-LLM           | ✅ Inflight Batching | ✅              | ✅             |
-| FastDeploy (当前) | ✅ 正常工作          | ❌ 默认关闭     | ❌ 默认关闭    |
+| 框架              | Continuous Batching | Chunked Prefill | Prefix Caching |
+| --------------- | ------------------- | --------------- | -------------- |
+| vLLM            | ✅ 默认开启              | ✅ 默认开启          | ✅ 默认开启         |
+| TRT-LLM         | ✅ Inflight Batching | ✅               | ✅              |
+| FastDeploy (当前) | ✅ 正常工作              | ❌ 默认关闭          | ❌ 默认关闭         |
 
-FastDeploy 的 continuous batching 已验证工作（2路 91.5% 效率，4路 84.8% 效率），但 chunked_prefill 和 prefix_caching 未启用，限制了多轮对话和长序列场景的性能。
+FastDeploy 的 continuous batching 已验证工作（2路 91.5% 效率，4路 84.8% 效率），但 chunked\_prefill 和 prefix\_caching 未启用，限制了多轮对话和长序列场景的性能。
+
+***
+
+# 四、对比分析
+
+## 1. CUDAGraph 修复方案对比
+
+| 方案 | 描述 | 优点 | 缺点 |
+| --- | --- | --- | --- |
+| 方案A：扩展设备检查 | 在 `is_compiled_with_cuda()` 基础上增加 Custom Device 检查 | 最小侵入，~1行代码修改 | 需逐个适配 Custom Device 类型 |
+| 方案B：统一设备能力查询 | 新增 `is_cudagraph_supported()` 运行时检测接口 | 通用性强，优雅降级 | 需 Paddle 框架侧配合，改动面大 |
+
+**选型结论**：采用方案A作为短期修复（第二阶段-2），方案B作为长期演进方向（FastDeploy 侧 `MACAPlatform.is_cudagraph_supported()` 已预留）。
+
+## 2. 异步内存分配方案对比
+
+| 方案 | 描述 | 优点 | 缺点 |
+| --- | --- | --- | --- |
+| 方案A：Custom Device 路径适配 mcMallocAsync | 在 CUDAGraph capture 路径条件使用异步分配 | 与 CUDA 路径行为一致 | 需确认 MACA runtime 支持 mcMallocAsync |
+| 方案B：预分配 + pool 复用 | CUDAGraph capture 前预分配内存池 | 不依赖 mcMallocAsync | 实现复杂，内存浪费 |
+
+**选型结论**：采用方案A，与 PyTorch/vLLM 的 cudaMallocAsync 路径对齐，需 Paddle 团队确认 MACA runtime 的 mcMallocAsync 可用性。
+
+## 3. 并发调度策略对比
+
+| 策略 | 当前状态 | vLLM 状态 | 优先级 |
+| --- | --- | --- | --- |
+| Continuous Batching | ✅ 已验证工作 | ✅ 默认开启 | — |
+| Chunked Prefill | ❌ 默认关闭 | ✅ 默认开启 | P2 |
+| Prefix Caching | ❌ 默认关闭 | ✅ 默认开启 | P2 |
+
+FastDeploy 的 Continuous Batching 已验证有效（2路 91.5%，4路 84.8%），Chunked Prefill 和 Prefix Caching 为后续优化方向。
 
 ---
 
-# 四、设计思路与实现方案
+# 五、设计思路与实现方案
 
 ## 1. 总体原则
 
@@ -390,7 +422,7 @@ class MACAPlatform:
             return False
 ```
 
-### P1：调整 FD_ENC_DEC_BLOCK_NUM=4
+### P1：调整 FD\_ENC\_DEC\_BLOCK\_NUM=4
 
 **预期收益**：吞吐 33.64→44.82 tok/s（+33%），零代码修改
 
@@ -410,19 +442,19 @@ export FD_ENC_DEC_BLOCK_NUM=4
 - 或启用 `chunked_prefill=True`，允许 8×989 tokens 分块处理，避免排队超时
 - 增大 `serving_chat.py:592` 的内部超时（10s → 30s+）
 
-### P2：启用 prefix_caching
+### P2：启用 prefix\_caching
 
 **预期收益**：多轮对话 TTFT 降低（复用共享 prefix KV Cache）
 
-**具体操作**：修改调度器配置，启用 prefix_caching
+**具体操作**：修改调度器配置，启用 prefix\_caching
 
-### P2：评估 chunked_prefill
+### P2：评估 chunked\_prefill
 
 **预期收益**：Prefill/Decode 交错执行，降低排队延迟
 
 **具体操作**：当前默认 False，长序列 Prefill 阻塞 Decode
 
-### P3：优化 weight_only_linear 带宽利用率
+### P3：优化 weight\_only\_linear 带宽利用率
 
 **预期收益**：小幅提升（CUDAGraph 启用后带宽才成为真正瓶颈）
 
@@ -430,33 +462,33 @@ export FD_ENC_DEC_BLOCK_NUM=4
 
 ## 3. 优化优先级量化对比
 
-| 优先级 | 优化项                  | 预期 Decode 吞吐 | 预期 E2E | 实现难度 | 代码侵入量 |
-| ------ | ----------------------- | ---------------- | -------- | -------- | ---------- |
-| 基线   | 当前状态                | 43 tok/s         | 5.93s    | -        | -          |
-| P1     | BLOCK_NUM=4             | 45 tok/s         | 5.71s    | 极低     | 0 行       |
-| P0     | CUDAGraph 修复          | 86-130 tok/s     | 2.1-3.1s | 中       | ~50 行     |
-| P0+P1  | CUDAGraph + BLOCK_NUM=4 | 90-135 tok/s     | 2.0-3.0s | 中       | ~50 行     |
+| 优先级   | 优化项                      | 预期 Decode 吞吐 | 预期 E2E   | 实现难度 | 代码侵入量  |
+| ----- | ------------------------ | ------------ | -------- | ---- | ------ |
+| 基线    | 当前状态                     | 43 tok/s     | 5.93s    | -    | -      |
+| P1    | BLOCK\_NUM=4             | 45 tok/s     | 5.71s    | 极低   | 0 行    |
+| P0    | CUDAGraph 修复             | 86-130 tok/s | 2.1-3.1s | 中    | \~50 行 |
+| P0+P1 | CUDAGraph + BLOCK\_NUM=4 | 90-135 tok/s | 2.0-3.0s | 中    | \~50 行 |
 
----
+***
 
-# 五、测试和验收的考量
+# 六、测试和验收的考量
 
 ## 1. 正确性验证
 
-- [ ] CUDAGraph 修复后，单请求推理输出与基线完全一致（逐 token 对比）
+- [x] CUDAGraph 修复后，单请求推理输出与基线完全一致（逐 token 对比）
 - [ ] CUDAGraph 修复后，多轮对话输出与基线一致
-- [ ] FD_ENC_DEC_BLOCK_NUM=4 后，推理输出与 BLOCK_NUM=2 一致
+- [ ] FD\_ENC\_DEC\_BLOCK\_NUM=4 后，推理输出与 BLOCK\_NUM=2 一致
 - [ ] 8 路并发修复后，所有请求正常返回，无 CancelledError
 
 ## 2. 性能验证
 
-| 验证项             | 基线             | 验收标准         | 测试方法                         |
-| ------------------ | ---------------- | ---------------- | -------------------------------- |
-| 单请求 Decode 吞吐 | 43.18 tok/s      | ≥ 86 tok/s (2x) | scenario_benchmarks.py S1        |
-| 单请求 E2E         | 5.93s            | ≤ 3.1s          | scenario_benchmarks.py S1        |
-| CUDAGraph 启用确认 | cuda_graph=False | cuda_graph=True  | FastDeploy 日志                  |
-| 4 路并发聚合吞吐   | 146.4 tok/s      | ≥ 280 tok/s     | concurrent_serving_benchmarks.py |
-| 8 路并发可用性     | 全部超时         | 0 error          | concurrent_serving_benchmarks.py |
+| 验证项            | 基线                | 验收标准             | 测试方法                               |
+| -------------- | ----------------- | ---------------- | ---------------------------------- |
+| 单请求 Decode 吞吐  | 43.18 tok/s       | ≥ 86 tok/s (2x)  | scenario\_benchmarks.py S1         |
+| 单请求 E2E        | 5.93s             | ≤ 3.1s           | scenario\_benchmarks.py S1         |
+| CUDAGraph 启用确认 | cuda\_graph=False | cuda\_graph=True | FastDeploy 日志                      |
+| 4 路并发聚合吞吐      | 146.4 tok/s       | ≥ 280 tok/s      | concurrent\_serving\_benchmarks.py |
+| 8 路并发可用性       | 全部超时              | 0 error          | concurrent\_serving\_benchmarks.py |
 
 ## 3. 验收标准
 
@@ -466,9 +498,9 @@ export FD_ENC_DEC_BLOCK_NUM=4
 - [ ] 推理结果正确性通过
 - [ ] Profiling Trace 文件可复现
 
----
+***
 
-# 六、影响面
+# 七、影响面
 
 ## 1. 对用户的影响
 
@@ -488,48 +520,85 @@ export FD_ENC_DEC_BLOCK_NUM=4
 - `CUDAGraphAllocator`：Custom Device 路径内存分配策略变更，需确保非 capture 模式行为不变
 - `MACAPlatform`：新增 `is_cudagraph_supported()` 方法，纯增量变更
 
-## 4. 限制
+## 4. 对二次开发用户的影响
+
+- `MACAPlatform` 新增 `is_cudagraph_supported()` 方法，二次开发用户可扩展其他 Custom Device 的 CUDAGraph 支持
+- `cudagraph_piecewise_backend.py` 设备检查逻辑扩展，二次开发用户需注意 Custom Device 类型注册
+
+## 5. 对比业内深度学习框架的差距与优势的影响
+
+- 差距：FastDeploy 缺少运行时 CUDAGraph 能力检测（vLLM 已有平台级适配），缺少 Chunked Prefill 和 Prefix Caching（vLLM 默认开启）
+- 优势：Continuous Batching 已验证工作，MACA FA 后端独立可用，CUDAGraph 修复后预期 Decode 性能与 CUDA 平台对齐
+
+## 6. 其他风险
+
+- `mcMallocAsync` 在 MACA runtime 中的可用性未在公开文档中确认，需 Paddle 团队与沐曦确认
+- CUDAGraph 修复后需全面回归测试，确保非 Metax 平台行为不变
+
+## 7. 限制
 
 - CUDAGraph 修复依赖 Paddle 框架侧 `mcMallocAsync` 适配，需 Paddle 团队配合
 - CUDAGraph 仅优化 Decode 阶段，Prefill 阶段不受影响
-- 当前 profiling 基于 max_tokens=256 场景，更长序列的瓶颈分布可能不同
+- 当前 profiling 基于 max\_tokens=256 场景，更长序列的瓶颈分布可能不同
 
----
+***
 
-# 七、排期规划
+# 八、排期规划
 
-| 阶段       | 内容                                                    | 状态        |
-| ---------- | ------------------------------------------------------- | ----------- |
-| 第一阶段   | 性能瓶颈深度剖析 + Profiling Trace 产出 + RFC 提交      | ✅ 本次提交 |
-| 第二阶段-1 | P1: 调整 FD_ENC_DEC_BLOCK_NUM=4（零代码，立即可用）     | 待启动      |
-| 第二阶段-2 | P0: 修复 CUDAGraph 第一层阻塞（设备检查）               | 待启动      |
-| 第二阶段-3 | P0: 修复 CUDAGraph 第二层阻塞（mcMallocAsync 适配）     | 待启动      |
-| 第二阶段-4 | P2: 修复 8 路并发超时（max_num_seqs / chunked_prefill） | 待启动      |
-| 第二阶段-5 | 性能验收 + Profiling 对比                               | 待启动      |
+| 阶段     | 内容                                                | 状态     |
+| ------ | ------------------------------------------------- | ------ |
+| 第一阶段   | 性能瓶颈深度剖析 + Profiling Trace 产出 + RFC 提交            | ✅ 本次提交 |
+| 第二阶段-1 | P1: 调整 FD\_ENC\_DEC\_BLOCK\_NUM=4（零代码，立即可用）       | 待启动    |
+| 第二阶段-2 | P0: 修复 CUDAGraph 第一层阻塞（设备检查）                      | 待启动    |
+| 第二阶段-3 | P0: 修复 CUDAGraph 第二层阻塞（mcMallocAsync 适配）          | 待启动    |
+| 第二阶段-4 | P2: 修复 8 路并发超时（max\_num\_seqs / chunked\_prefill） | 待启动    |
+| 第二阶段-5 | 性能验收 + Profiling 对比                               | 待启动    |
 
----
+***
 
-# 八、Profiling Trace 文件清单
+# 九、Profiling Trace 文件清单
 
-| 文件                                          | 采集方式              | 格式           | 大小   |
-| --------------------------------------------- | --------------------- | -------------- | ------ |
-| `output/hook_profiler_trace.json`           | Paddle Profiler (CPU) | Chrome tracing | 2.5MB  |
-| `output/profiler_op_stats.json`             | Paddle Profiler 解析  | JSON           | 824B   |
-| `output/mctracer_timing.json`               | mcTracer timing       | JSON           | 251B   |
-| `output/mctracer_kernel_stats.json`         | mcTracer kernel 统计  | JSON           | 15KB   |
-| `tracer_out_*/paddleocr_vl-*.json`          | mcTracer raw trace    | mcTracer trace | ~1.2GB |
-| `output/scenario_benchmarks.json`           | 场景基准 S1-S4,S8     | JSON           | 2.3KB  |
-| `output/concurrent_serving_benchmarks.json` | 并发基准 S5-S7        | JSON           | 12KB   |
-| `output/enc_dec_block_num_sweep.json`       | BLOCK_NUM 扫描        | JSON           | 1.4KB  |
-| `output/gpu_utilization.log`                | mx-smi 采样           | CSV            | 290B   |
-| `output/gpu_utilization_phases.json`        | GPU 利用率分阶段      | JSON           | 167B   |
+| 文件                                          | 采集方式                  | 格式             | 大小      |
+| ------------------------------------------- | --------------------- | -------------- | ------- |
+| `output/hook_profiler_trace.json`           | Paddle Profiler (CPU) | Chrome tracing | 2.5MB   |
+| `output/profiler_op_stats.json`             | Paddle Profiler 解析    | JSON           | 824B    |
+| `output/mctracer_timing.json`               | mcTracer timing       | JSON           | 251B    |
+| `output/mctracer_kernel_stats.json`         | mcTracer kernel 统计    | JSON           | 15KB    |
+| `tracer_out_*/paddleocr_vl-*.json`          | mcTracer raw trace    | mcTracer trace | \~1.2GB |
+| `output/scenario_benchmarks.json`           | 场景基准 S1-S4,S8         | JSON           | 2.3KB   |
+| `output/concurrent_serving_benchmarks.json` | 并发基准 S5-S7            | JSON           | 12KB    |
+| `output/enc_dec_block_num_sweep.json`       | BLOCK\_NUM 扫描         | JSON           | 1.4KB   |
+| `output/gpu_utilization.log`                | mx-smi 采样             | CSV            | 290B    |
+| `output/gpu_utilization_phases.json`        | GPU 利用率分阶段            | JSON           | 11.3KB  |
 
----
+***
 
-# 参考资料
+# 名词解释
+
+| 术语 | 含义 |
+| --- | --- |
+| CUDAGraph | CUDA/MACA 的流捕获机制，将多个 kernel launch 录制为图，一次提交执行，消除逐个 launch 开销 |
+| mcLaunchKernel | MACA runtime 的 kernel launch API，对应 CUDA 的 cuLaunchKernel |
+| mcMallocAsync | MACA runtime 的异步内存分配 API，对应 CUDA 的 cudaMallocAsync，CUDAGraph capture 期间必须使用 |
+| GQA | Grouped Query Attention，多组查询头共享 KV 头的注意力机制 |
+| Continuous Batching | 连续批处理，新请求可加入正在执行的 batch，无需等待整批完成 |
+| Chunked Prefill | 分块预填充，将长序列 Prefill 拆分为多个 chunk 与 Decode 交错执行 |
+| Prefix Caching | 前缀缓存，复用共享前缀（如系统 prompt）的 KV Cache 避免重复计算 |
+| mcTracer | 沐曦 Metax GPU 的 kernel 级性能剖析工具，采集 GPU kernel 执行时间与调用统计 |
+| TTFT | Time To First Token，首 token 延迟 |
+| E2E | End-to-End，端到端延迟 |
+
+# 附件及参考资料
+
+## 附件
+
+Profiling Trace 文件见九、Profiling Trace 文件清单。
+
+## 参考资料
 
 - [PaddlePaddle Community RFC 目录](https://github.com/PaddlePaddle/community/tree/master/rfcs/FastDeploy)
 - [FastDeploy 源码](https://github.com/PaddlePaddle/FastDeploy/tree/develop)
 - [PaddlePaddle Custom Device 机制](https://www.paddlepaddle.org.cn/documentation/docs/zh/guides/device_custom_device/index_cn.html)
 - [MACA CUDAGraph 兼容性分析](note/MetaX_C500_CUDA_Graph_Analysis.md)
 - [mcTracer 使用文档](https://github.com/MetaxTech/mctracer)
+
