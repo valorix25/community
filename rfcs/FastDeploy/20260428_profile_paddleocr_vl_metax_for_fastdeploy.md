@@ -136,10 +136,14 @@ wall_time ≈ 单请求 E2E（5.93s），说明 2路/4路请求几乎同时完�
 
 ### 4.1 整体利用率
 
-GPU 采样脚本在 FastDeploy 多进程架构下无法采集有效样本（mx-smi 在主进程内调用失败）。基于 mcTracer trace 和推理时间估算：
+GPU 采样脚本（`gpu_util_sampling.py`）通过 `mx-smi` 200ms 间隔采集 GPU 利用率、显存、HBM 带宽和 CCX 数据，`--separate-phases` 模式下拆分 Prefill/Decode 阶段。实测数据（修复采样线程竞态条件后）：
 
-- 单请求 Decode 阶段：GPU 利用率极低（batch=1，launch 开销受限）
-- Prefill 阶段：GPU 利用率较高（989 tokens 批处理）
+| 场景 | GPU util avg | GPU util max | HBM BW avg | HBM BW max | 样本数 |
+| -- | -- | -- | -- | -- | -- |
+| S1 (单图) | 5.8% | 14% | 43.05 GB/s | 477.03 GB/s | 29 |
+| S4 (纯文本) | 3.2% | 4% | 34.28 GB/s | 40.71 GB/s | 23 |
+
+单请求 Decode 阶段 GPU 利用率极低（avg 5-6%），与 mcTracer 分析一致：无 CUDAGraph 下 kernel launch 开销占 21.58% GPU 时间，实际计算占比极小。Prefill 阶段利用率略高（S1 Prefill avg 6%，仅 2 个采样点），但受 200ms 采样颗粒度限制，0.245s 的 Prefill 仅能采集 1-2 个样本，数值精度有限。
 
 ### 4.2 Prefill vs Decode 分离
 
