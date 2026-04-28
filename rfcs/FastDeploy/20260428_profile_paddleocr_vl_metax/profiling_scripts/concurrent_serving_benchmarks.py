@@ -21,7 +21,7 @@ import json
 import asyncio
 import aiohttp
 
-OUTPUT_DIR = '/data/output'
+OUTPUT_DIR = 'output'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 BASE_URL = os.environ.get('FD_SERVING_URL', 'http://127.0.0.1:8000')

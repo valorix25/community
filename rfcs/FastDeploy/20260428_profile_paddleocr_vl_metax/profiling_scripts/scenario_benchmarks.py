@@ -14,7 +14,7 @@ from fastdeploy import LLM, SamplingParams
 
 paddle.device.set_device('metax_gpu:0')
 
-OUTPUT_DIR = '/data/output'
+OUTPUT_DIR = 'output'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 llm = LLM(

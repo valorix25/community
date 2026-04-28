@@ -1,7 +1,7 @@
 """Method B: mcTracer GPU kernel trace for PaddleOCR-VL-1.5 on Metax GPU.
 
 Run under mcTracer:
-  /opt/maca/bin/mcTracer --mctx --name paddleocr_vl_profile python profiling_scripts/method_b_mctracer_inference.py
+  /opt/maca/bin/mcTracer --mctx --name paddleocr_vl_profile --odname output/tracer_mctracer python profiling_scripts/method_mctracer_inference.py
 
 mcTracer intercepts all GPU kernel launches and produces .mctx trace files
 with real GPU execution times. This script only needs to run inference —
@@ -20,7 +20,7 @@ from fastdeploy import LLM, SamplingParams
 
 paddle.device.set_device('metax_gpu:0')
 
-OUTPUT_DIR = '/data/output'
+OUTPUT_DIR = 'output'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 llm = LLM(
@@ -35,7 +35,7 @@ s1_prompt = [
     {
         "role": "user",
         "content": [
-            {"type": "image_url", "image_url": {"url": "file:///data/images/test_doc.png"}},
+            {"type": "image_url", "image_url": {"url": f"file://{os.path.dirname(os.path.abspath(__file__))}/../images/test_doc.png"}},
             {"type": "text", "text": "Recognize this table"},
         ],
     }

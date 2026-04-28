@@ -14,7 +14,7 @@ from fastdeploy import LLM, SamplingParams
 
 paddle.device.set_device('metax_gpu:0')
 
-OUTPUT_DIR = '/data/output'
+OUTPUT_DIR = 'output'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 llm = LLM(
@@ -26,7 +26,7 @@ prompt = [
     {
         "role": "user",
         "content": [
-            {"type": "image_url", "image_url": {"url": "file:///data/images/test_doc.png"}},
+            {"type": "image_url", "image_url": {"url": f"file://{os.path.dirname(os.path.abspath(__file__))}/../images/test_doc.png"}},
             {"type": "text", "text": "Recognize this table"},
         ],
     }
@@ -47,6 +47,7 @@ profiler = Profiler(
     targets=[ProfilerTarget.CPU],
     record_shapes=True,
     profile_memory=True,
+    on_trace_ready=lambda p: None,  # suppress default ./profiler_log/ output; we export manually below
 )
 
 profiler.start()

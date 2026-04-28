@@ -11,7 +11,7 @@ Usage:
     # Single child run (called by wrapper internally)
     python sweep_enc_dec_block_num.py --child --block-num 2
 
-Output: /data/output/enc_dec_block_num_sweep.json
+Output: output/enc_dec_block_num_sweep.json
 """
 import os
 import sys
@@ -24,7 +24,7 @@ SWEEP_VALUES = [1, 2, 4, 8]
 WARMUP = 2
 REPEATS = 3
 MODEL_PATH = '/mnt/moark-models/PaddleOCR-VL-1.5'
-OUTPUT_DIR = '/data/output'
+OUTPUT_DIR = 'output'
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, 'enc_dec_block_num_sweep.json')
 
 # Env vars for metax_gpu — keep in sync with setup_env.sh
